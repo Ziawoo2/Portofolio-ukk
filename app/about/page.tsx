@@ -49,14 +49,14 @@ const certificates: Certificate[] = [
     title: "Graphic Design : Pop your LinkedIn with 3D effects",
     issuer: "Coursera",
     year: "2026",
-    image: "/sertif1.jpg", // Ganti dengan path gambar sertifikatmu yang sebenarnya
+    image: "/sertif2.jpg", // Ganti dengan path gambar sertifikatmu yang sebenarnya
   },
   {
     id: 3,
     title: "Build a website with wordpress",
     issuer: "Coursera",
     year: "2026",
-    image: "/sertif2.jpg", // Ganti dengan path gambar sertifikatmu yang sebenarnya
+    image: "/sertif1.jpg", // Ganti dengan path gambar sertifikatmu yang sebenarnya
   },
 ];
 
