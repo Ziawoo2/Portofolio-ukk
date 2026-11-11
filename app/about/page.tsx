@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -17,7 +20,45 @@ import {
   MessageSquareHeart,
   Award,
   CheckCircle2,
+  Minus,
+  Maximize2,
+  X,
+  Lock,
 } from "lucide-react";
+
+// Tipe Data Sertifikat
+interface Certificate {
+  id: number;
+  title: string;
+  issuer: string;
+  year: string;
+  image: string; // Gambar sertifikat
+}
+
+// Data Sertifikat / Achievement dengan Gambar
+const certificates: Certificate[] = [
+  {
+    id: 1,
+    title: "Developed A Website With WIX",
+    issuer: "Coursera",
+    year: "2026",
+    image: "/sertif.jpg", // Ganti dengan path gambar sertifikatmu yang sebenarnya
+  },
+  {
+    id: 2,
+    title: "Graphic Design : Pop your LinkedIn with 3D effects",
+    issuer: "Coursera",
+    year: "2026",
+    image: "/sertif1.jpg", // Ganti dengan path gambar sertifikatmu yang sebenarnya
+  },
+  {
+    id: 3,
+    title: "Build a website with wordpress",
+    issuer: "Coursera",
+    year: "2026",
+    image: "/sertif2.jpg", // Ganti dengan path gambar sertifikatmu yang sebenarnya
+  },
+];
 
 // Data 3 Projek Pilihan
 const featuredProjects = [
@@ -50,28 +91,6 @@ const featuredProjects = [
   },
 ];
 
-// Data Sertifikat / Achievement (Bisa kamu sesuaikan)
-const certificates = [
-  {
-    id: 1,
-    title: "Developed A Website With WIX",
-    issuer: "Coursera",
-    year: "2026",
-  },
-  {
-    id: 2,
-    title: "Graphic Design : Pop your Linkeidn with 3D effects",
-    issuer: "Coursera",
-    year: "2026",
-  },
-  {
-    id: 3,
-    title: "Build a website with wordpress",
-    issuer: "Coursera",
-    year: "2026",
-  },
-];
-
 // Data Testimoni Pesan Teman
 const testimonials = [
   {
@@ -95,6 +114,16 @@ const testimonials = [
 ];
 
 export default function AboutPage() {
+  const [selectedCert, setSelectedCert] = useState<Certificate | null>(null);
+
+  const openCertModal = (cert: Certificate) => {
+    setSelectedCert(cert);
+  };
+
+  const closeCertModal = () => {
+    setSelectedCert(null);
+  };
+
   return (
     <main
       className="min-h-screen flex flex-col items-center justify-center p-4 md:p-8 text-center overflow-hidden relative py-12 gap-12"
@@ -248,11 +277,12 @@ export default function AboutPage() {
           {certificates.map((cert) => (
             <div
               key={cert.id}
-              className="group bg-white/90 backdrop-blur-md rounded-3xl p-5 shadow-xl border-2 border-[#5CB88A]/30 flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-300 relative"
+              onClick={() => openCertModal(cert)}
+              className="group bg-white/90 backdrop-blur-md rounded-3xl p-5 shadow-xl border-2 border-[#5CB88A]/30 flex flex-col justify-between hover:-translate-y-1.5 transition-all duration-300 relative cursor-pointer"
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <div className="w-10 h-10 rounded-2xl bg-[#FFC0D9]/50 border border-[#FF6B97]/30 flex items-center justify-center text-[#FF6B97]">
+                  <div className="w-10 h-10 rounded-2xl bg-[#FFC0D9]/50 border border-[#FF6B97]/30 flex items-center justify-center text-[#FF6B97] group-hover:scale-110 transition-transform">
                     <Award className="w-5 h-5" />
                   </div>
                   <span className="text-xs font-extrabold text-[#5CB88A] bg-[#C2F4C7] px-3 py-1 rounded-full border border-[#5CB88A]/20">
@@ -260,7 +290,7 @@ export default function AboutPage() {
                   </span>
                 </div>
 
-                <h3 className="text-base font-black text-[#5CB88A] mb-1 leading-snug">
+                <h3 className="text-base font-black text-[#5CB88A] mb-1 leading-snug group-hover:text-[#4fa379] transition-colors">
                   {cert.title}
                 </h3>
                 <p className="text-slate-500 text-xs font-bold mb-4 flex items-center gap-1.5">
@@ -268,10 +298,65 @@ export default function AboutPage() {
                   <span>{cert.issuer}</span>
                 </p>
               </div>
+
+              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs font-black text-[#FF6B97]">
+                <span>Lihat Sertifikat ✨</span>
+                <ExternalLink className="w-3.5 h-3.5 group-hover:scale-110 transition-transform" />
+              </div>
             </div>
           ))}
         </div>
       </section>
+
+      {/* MODAL POP-UP PREVIEW SERTIFIKAT */}
+      {selectedCert && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-[2.5rem] max-w-xl w-full overflow-hidden shadow-2xl border-4 border-[#5CB88A] relative flex flex-col">
+            
+            {/* Control Bar Modal */}
+            <div className="bg-[#5CB88A] px-6 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-3.5 h-3.5 rounded-full bg-[#FF6B97]"></span>
+                <span className="w-3.5 h-3.5 rounded-full bg-[#FFC0D9]"></span>
+                <span className="w-3.5 h-3.5 rounded-full bg-[#C2F4C7]"></span>
+              </div>
+              <span className="text-white text-xs font-black truncate max-w-xs">
+                {selectedCert.title}
+              </span>
+              <button
+                onClick={closeCertModal}
+                className="text-white hover:bg-white/20 p-1 rounded-full transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Content Modal */}
+            <div className="p-6 text-left space-y-4">
+              <div className="relative w-full h-64 md:h-72 rounded-2xl overflow-hidden bg-slate-900 border-2 border-[#5CB88A]/30 shadow-inner">
+                <Image
+                  src={selectedCert.image}
+                  alt={selectedCert.title}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+
+              <div>
+                <span className="inline-block bg-[#FFC0D9]/50 text-[#FF6B97] text-xs font-black px-3 py-1 rounded-full mb-2 border border-[#FFC0D9]">
+                  Issuer: {selectedCert.issuer} ({selectedCert.year})
+                </span>
+                <h3 className="text-xl font-black text-[#5CB88A]">
+                  {selectedCert.title}
+                </h3>
+                <p className="text-slate-600 text-xs md:text-sm font-semibold mt-1">
+                  Sertifikat resmi kelulusan kursus digital dan peningkatan keahlian.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* PROYEK TERLAKSANA DI BAWAH */}
       <section className="max-w-6xl w-full flex flex-col items-center mt-2">
