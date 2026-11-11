@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -14,17 +15,36 @@ import {
   Minus,
   X,
   Lock,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
-// Data Semua Projek
-const allProjects = [
+// Tipe Data Projek dengan Galeri
+interface Project {
+  id: number;
+  title: string;
+  category: string;
+  description: string;
+  longDescription: string;
+  image: string;
+  gallery: string[];
+  tags: string[];
+  demoUrl: string;
+  githubUrl: string;
+}
+
+// Data Semua Projek beserta Galeri Fotonya
+const allProjects: Project[] = [
   {
     id: 1,
     title: "Stelk Studio Portfolio Website",
     category: "Web Dev",
     description:
       "Website portofolio duo interaktif berbasis Next.js & React dengan fitur state management, modul like/komentar, dan halaman admin.",
+    longDescription:
+      "Platform web portofolio kolaboratif yang dirancang untuk menampilkan karya desain UI/UX dan rekayasa perangkat lunak dengan pendekatan antarmuka modern, interaktif, serta responsif.",
     image: "/project1.jpg",
+    gallery: ["/project1.jpg", "/porto2.png"],
     tags: ["Next.js", "React", "TypeScript", "Tailwind CSS"],
     demoUrl: "#",
     githubUrl: "#",
@@ -35,7 +55,10 @@ const allProjects = [
     category: "Interior Design",
     description:
       "Konsep tata ruang estetik dan visual 3D bertema nuansa alam yang menenangkan dan sejuk.",
+    longDescription:
+      "Eksplorasi perancangan interior 3D dengan pendekatan elemen kayu, pencahayaan alami, dan palet warna bumi (earthy tones) untuk menciptakan suasana hunian yang sejuk dan menenangkan.",
     image: "/project2.jpg",
+    gallery: ["/project2.jpg", "/natur.jpg", "/natur2.jpg"],
     tags: ["3D Building", "UI/UX Design", "Spatial Layout"],
     demoUrl: "#",
     githubUrl: "#",
@@ -45,8 +68,11 @@ const allProjects = [
     title: "English Meeting Club Insta Feed",
     description:
       "Desain multi-panel feed Instagram dan materi publikasi visual kreatif untuk English Meeting Club.",
+    longDescription:
+      "Pengembangan aset visual sosial media organisasi yang mencakup tata letak grafis terpadu, pemilihan tipografi, dan komposisi warna konsisten untuk meningkatkan <i>branding</i> klub.",
     category: "Graphic Design",
     image: "/project3.jpg",
+    gallery: ["/project3.jpg", "/emc.jpg", "/emc2.jpg"],
     tags: ["Graphic Design", "Social Media", "Branding"],
     demoUrl: "#",
     githubUrl: "#",
@@ -57,7 +83,10 @@ const allProjects = [
     category: "UI/UX",
     description:
       "EcoLore adalah aplikasi ramah lingkungan yang mengedukasi pengguna tentang isu lingkungan sekaligus menyediakan ruang komunitas bagi sesama pencinta lingkungan.",
+    longDescription:
+      "Perancangan antarmuka aplikasi seluler yang berfokus pada pengalaman pengguna (UX) ramah lingkungan, fitur edukasi interaktif, dan ruang kolaborasi komunitas hijau.",
     image: "/ecolore.jpg",
+    gallery: ["/ecolore.jpg", "/ecolore.png"],
     tags: ["UI/UX", "Figma", "Eco"],
     demoUrl: "#",
     githubUrl: "#",
@@ -68,7 +97,10 @@ const allProjects = [
     category: "Interior Design",
     description:
       "Desain ruang keluarga bergaya vintage dengan warna netral hangat, sentuhan floral, dan suasana yang nyaman serta menenangkan.",
+    longDescription:
+      "Detail desain tata ruang hunian yang menggabungkan elemen dekoratif klasik vintage dengan kenyamanan modern, menghasilkan ruang santai yang hangat bagi keluarga.",
     image: "/project5.png",
+    gallery: ["/project5.png", "/cozy1.jpg"],
     tags: ["Vintage Style", "Residential Design", "Cozy Interior"],
     demoUrl: "#",
     githubUrl: "#",
@@ -79,7 +111,10 @@ const allProjects = [
     category: "3D Build",
     description:
       "Desain rumah modern minimalis dengan bentuk geometris, material beton ekspos, dan vegetasi tropis yang menciptakan kesan natural sekaligus kontemporer.",
+    longDescription:
+      "Eksplorasi arsitektur brutalism kontemporer menggunakan bentuk struktural tegas, material ekspos, serta integrasi lanskap hijau terbuka.",
     image: "/project6.png",
+    gallery: ["/project6.png", "/brutilisim.png", "/brutilisim2.png"],
     tags: ["3D Building", "Brutalism", "Nature"],
     demoUrl: "#",
     githubUrl: "#",
@@ -87,6 +122,31 @@ const allProjects = [
 ];
 
 export default function ProjectsPage() {
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [currentImgIndex, setCurrentImgIndex] = useState<number>(0);
+
+  const openModal = (project: Project) => {
+    setSelectedProject(project);
+    setCurrentImgIndex(0);
+  };
+
+  const closeModal = () => {
+    setSelectedProject(null);
+    setCurrentImgIndex(0);
+  };
+
+  const nextImage = () => {
+    if (!selectedProject) return;
+    setCurrentImgIndex((prev) => (prev + 1) % selectedProject.gallery.length);
+  };
+
+  const prevImage = () => {
+    if (!selectedProject) return;
+    setCurrentImgIndex((prev) =>
+      prev === 0 ? selectedProject.gallery.length - 1 : prev - 1
+    );
+  };
+
   return (
     <main
       className="min-h-screen flex flex-col items-center justify-start p-4 md:p-8 text-center overflow-hidden relative py-12 gap-8"
@@ -194,13 +254,13 @@ export default function ProjectsPage() {
 
                 {/* Action Links */}
                 <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                  <Link
-                    href={project.demoUrl}
-                    className="inline-flex items-center gap-1.5 text-xs font-black text-[#FF6B97] hover:text-[#e05580] transition-colors"
+                  <button
+                    onClick={() => openModal(project)}
+                    className="inline-flex items-center gap-1.5 text-xs font-black text-[#FF6B97] hover:text-[#e05580] transition-colors cursor-pointer"
                   >
                     <span>View Project</span>
                     <ExternalLink className="w-3.5 h-3.5" />
-                  </Link>
+                  </button>
                   <Sparkles className="w-4 h-4 text-[#5CB88A]/40 group-hover:text-[#5CB88A] transition-colors" />
                 </div>
               </div>
@@ -208,6 +268,126 @@ export default function ProjectsPage() {
           ))}
         </div>
       </div>
+
+      {/* MODAL POP-UP GALERI PROJEK (BROWSER CARD STYLE) */}
+      {selectedProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-[2.5rem] max-w-2xl w-full overflow-hidden shadow-2xl border-4 border-[#5CB88A] relative flex flex-col max-h-[90vh]">
+            
+            {/* Control Bar Modal */}
+            <div className="bg-[#5CB88A] px-6 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-3.5 h-3.5 rounded-full bg-[#FF6B97]"></span>
+                <span className="w-3.5 h-3.5 rounded-full bg-[#FFC0D9]"></span>
+                <span className="w-3.5 h-3.5 rounded-full bg-[#C2F4C7]"></span>
+              </div>
+              <span className="text-white text-xs font-black truncate max-w-xs">
+                {selectedProject.title}
+              </span>
+              <button
+                onClick={closeModal}
+                className="text-white hover:bg-white/20 p-1 rounded-full transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Content Modal */}
+            <div className="p-6 overflow-y-auto text-left space-y-4">
+              
+              {/* Slider Foto Galeri */}
+              <div className="relative w-full h-64 md:h-80 rounded-2xl overflow-hidden bg-slate-900 border-2 border-[#5CB88A]/30 shadow-inner">
+                <Image
+                  src={selectedProject.gallery[currentImgIndex]}
+                  alt={`${selectedProject.title} preview`}
+                  fill
+                  className="object-cover transition-all duration-300"
+                />
+
+                {/* Navigasi Slide Gambar */}
+                {selectedProject.gallery.length > 1 && (
+                  <>
+                    <button
+                      onClick={prevImage}
+                      className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#5CB88A] p-2 rounded-full shadow-md transition-all cursor-pointer"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={nextImage}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-[#5CB88A] p-2 rounded-full shadow-md transition-all cursor-pointer"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </>
+                )}
+
+                {/* Counter Gambar */}
+                <span className="absolute bottom-3 right-3 bg-black/60 text-white font-extrabold text-[10px] px-3 py-1 rounded-full backdrop-blur-md">
+                  {currentImgIndex + 1} / {selectedProject.gallery.length}
+                </span>
+              </div>
+
+              {/* Thumbnails Foto Kecil */}
+              {selectedProject.gallery.length > 1 && (
+                <div className="flex gap-2 overflow-x-auto pb-2">
+                  {selectedProject.gallery.map((img, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentImgIndex(idx)}
+                      className={`relative w-16 h-12 rounded-xl overflow-hidden border-2 transition-all cursor-pointer flex-shrink-0 ${
+                        currentImgIndex === idx
+                          ? "border-[#FF6B97] scale-105 shadow-md"
+                          : "border-transparent opacity-60 hover:opacity-100"
+                      }`}
+                    >
+                      <Image src={img} alt="thumbnail" fill className="object-cover" />
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Info Detail Projek */}
+              <div>
+                <span className="inline-block bg-[#FFC0D9]/50 text-[#FF6B97] text-xs font-black px-3 py-1 rounded-full mb-2 border border-[#FFC0D9]">
+                  {selectedProject.category}
+                </span>
+                <h3 className="text-xl font-black text-[#5CB88A]">
+                  {selectedProject.title}
+                </h3>
+                <p className="text-slate-600 text-xs md:text-sm font-semibold mt-2 leading-relaxed">
+                  {selectedProject.longDescription}
+                </p>
+              </div>
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {selectedProject.tags.map((tag, idx) => (
+                  <span
+                    key={idx}
+                    className="bg-[#C2F4C7] text-[#5CB88A] font-extrabold text-[10px] px-3 py-1 rounded-xl border border-[#5CB88A]/30"
+                  >
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              {/* Aksi Link Demo / GitHub */}
+              <div className="pt-3 flex gap-3">
+                <a
+                  href={selectedProject.demoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#5CB88A] text-white font-black text-xs rounded-full shadow-md hover:bg-[#4fa379] transition-all"
+                >
+                  <span>Live Demo</span>
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* FOOTER NAV BUTTON */}
       <div className="mt-4">
